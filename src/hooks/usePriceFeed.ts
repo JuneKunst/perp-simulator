@@ -23,7 +23,7 @@ export function usePriceFeed(symbol: string = 'BTCUSDT') {
           }
 
           const trigger = PositionEngine.checkTPSL(p, data.price)
-          if (trigger) closePosition(p.id, data.price)
+          if (trigger) closePosition(p.id, data.price, trigger)
         })
     })
 

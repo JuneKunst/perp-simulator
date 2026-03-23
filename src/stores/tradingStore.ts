@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import type { Position, PriceData, OpenPositionParams } from '@/types/trading'
+import type { Position, PriceData, OpenPositionParams, CloseReason } from '@/types/trading'
 import { PositionEngine } from '@/services/trading/PositionEngine'
 
 interface TradingState {
@@ -15,7 +15,7 @@ interface TradingState {
   // Positions
   positions: Position[]
   openPosition: (params: OpenPositionParams) => void
-  closePosition: (id: string, currentPrice: number) => void
+  closePosition: (id: string, currentPrice: number, reason?: CloseReason) => void
   liquidatePosition: (id: string) => void
 
   // UI state
@@ -60,25 +60,35 @@ export const useTradingStore = create<TradingState>()(
       })
     },
 
-    closePosition: (id, currentPrice) => {
+    closePosition: (id, currentPrice, reason = 'manual') => {
       set((state) => {
         const idx = state.positions.findIndex((p) => p.id === id)
         if (idx === -1) return
 
         const position = state.positions[idx]
         const { unrealizedPnl, fees } = PositionEngine.getPnL(position, currentPrice)
-        const returned = position.collateral + unrealizedPnl - fees
+        const realizedPnl = unrealizedPnl - fees
+        const returned = position.collateral + realizedPnl
 
         state.balance += Math.max(returned, 0)
         state.positions[idx].status = 'closed'
+        state.positions[idx].closedAt = Date.now()
+        state.positions[idx].exitPrice = currentPrice
+        state.positions[idx].realizedPnl = realizedPnl
+        state.positions[idx].closeReason = reason
       })
     },
 
     liquidatePosition: (id) => {
       set((state) => {
         const idx = state.positions.findIndex((p) => p.id === id)
-        if (idx !== -1) state.positions[idx].status = 'liquidated'
-        // collateral is lost — no balance returned
+        if (idx === -1) return
+        const position = state.positions[idx]
+        state.positions[idx].status = 'liquidated'
+        state.positions[idx].closedAt = Date.now()
+        state.positions[idx].exitPrice = position.liquidationPrice
+        state.positions[idx].realizedPnl = -position.collateral
+        state.positions[idx].closeReason = 'liquidated'
       })
     },
 

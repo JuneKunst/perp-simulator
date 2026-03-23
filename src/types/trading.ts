@@ -10,6 +10,8 @@ export type TransactionStatus =
   | 'confirmed'
   | 'failed'
 
+export type CloseReason = 'manual' | 'tp' | 'sl' | 'liquidated'
+
 export interface Position {
   id: string
   side: Side
@@ -20,8 +22,13 @@ export interface Position {
   liquidationPrice: number
   takeProfitPrice?: number
   stopLossPrice?: number
-  openedAt: number     // timestamp
+  openedAt: number     // timestamp ms
   status: PositionStatus
+  // Set on close
+  closedAt?: number    // timestamp ms
+  exitPrice?: number
+  realizedPnl?: number
+  closeReason?: CloseReason
 }
 
 export interface PnL {
