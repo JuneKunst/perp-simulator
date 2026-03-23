@@ -4,6 +4,10 @@ An interactive perpetuals trading simulator built for learning DeFi futures conc
 
 **Live Demo → [perp-simulator.vercel.app](https://perp-simulator.vercel.app)**
 
+| Dark (Terminal) | Light (Toss-style) |
+|---|---|
+| ![Dark mode](public/screenshots/dark-desktop.png) | ![Light mode](public/screenshots/light-desktop.png) |
+
 ---
 
 ## What It Does
@@ -22,6 +26,8 @@ Built from first-hand experience with centralized exchange failures — forced l
 - **Auto-liquidation & TP/SL** — Triggers fire automatically when price hits your levels
 - **Paper balance** — Start with $10,000 USDT, no wallet needed to practice
 - **Educational tooltips** — Every key concept explained inline (collateral, leverage, liquidation, funding rate, TP/SL)
+- **Dual theme** — Dark (Bloomberg terminal, IBM Plex Mono, yellow-green accent) and Light (Toss-inspired, clean and approachable)
+- **Position history** — Closed positions tab with realized PnL, duration, exit price, and close reason
 - **Wallet connect** — RainbowKit + Wagmi integration (Ethereum, Arbitrum, Optimism, Base)
 
 ---
