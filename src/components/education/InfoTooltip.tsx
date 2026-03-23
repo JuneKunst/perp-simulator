@@ -24,6 +24,10 @@ const GLOSSARY: Record<string, { title: string; body: string }> = {
     title: 'Unrealized P&L',
     body: 'Your profit or loss if you closed the position right now. "Unrealized" means the trade is still open — nothing is actually gained or lost until you close.',
   },
+  tpsl: {
+    title: 'Take Profit / Stop Loss',
+    body: 'Automatic orders that close your position at a target price. Take Profit locks in gains. Stop Loss limits your downside. Both trigger automatically when price reaches your level — no need to watch the screen.',
+  },
 }
 
 export function InfoTooltip({ termKey }: { termKey: string }) {

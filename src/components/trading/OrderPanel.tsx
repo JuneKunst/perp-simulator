@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useTradingStore } from '@/stores/tradingStore'
 import { usePosition } from '@/hooks/usePosition'
 import { PositionEngine } from '@/services/trading/PositionEngine'
-import { formatPrice, formatNumber, cn } from '@/lib/utils'
+import { formatPrice, cn } from '@/lib/utils'
 import { InfoTooltip } from '@/components/education/InfoTooltip'
 
 const LEVERAGE_PRESETS = [1, 2, 5, 10, 20, 50]
@@ -18,6 +18,10 @@ export function OrderPanel() {
   const collateralInput = useTradingStore((s) => s.collateralInput)
   const setCollateralInput = useTradingStore((s) => s.setCollateralInput)
 
+  const [tpInput, setTpInput] = useState('')
+  const [slInput, setSlInput] = useState('')
+  const [showTPSL, setShowTPSL] = useState(false)
+
   const { balance, openPosition } = usePosition()
 
   const collateral = parseFloat(collateralInput) || 0
@@ -28,14 +32,29 @@ export function OrderPanel() {
       ? PositionEngine.getLiquidationPrice(selectedSide, priceData.price, selectedLeverage)
       : null
 
+  const tpPrice = parseFloat(tpInput) || undefined
+  const slPrice = parseFloat(slInput) || undefined
+
+  // Validate TP/SL direction
+  const tpValid = !tpPrice || !priceData || (
+    selectedSide === 'long' ? tpPrice > priceData.price : tpPrice < priceData.price
+  )
+  const slValid = !slPrice || !priceData || (
+    selectedSide === 'long' ? slPrice < priceData.price : slPrice > priceData.price
+  )
+
   const handleOpen = () => {
     if (!collateral || collateral <= 0) return
     openPosition({
       side: selectedSide,
       collateral,
       leverage: selectedLeverage,
+      takeProfitPrice: tpValid ? tpPrice : undefined,
+      stopLossPrice: slValid ? slPrice : undefined,
     })
     setCollateralInput('')
+    setTpInput('')
+    setSlInput('')
   }
 
   return (
@@ -125,6 +144,76 @@ export function OrderPanel() {
         </div>
       </div>
 
+      {/* TP / SL */}
+      <div className="flex flex-col gap-2">
+        <button
+          onClick={() => setShowTPSL((v) => !v)}
+          className="flex items-center justify-between text-xs text-gray-400 hover:text-gray-200 transition-colors"
+        >
+          <span className="flex items-center gap-1">
+            Take Profit / Stop Loss
+            <InfoTooltip termKey="tpsl" />
+          </span>
+          <span className="text-gray-600">{showTPSL ? '▲' : '▼'}</span>
+        </button>
+
+        {showTPSL && (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-blue-400">Take Profit (USD)</label>
+              <div className={cn(
+                'flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2 border transition-colors',
+                tpInput && !tpValid ? 'border-red-500' : 'border-gray-700 focus-within:border-blue-500'
+              )}>
+                <span className="text-gray-400 text-sm">$</span>
+                <input
+                  type="number"
+                  value={tpInput}
+                  onChange={(e) => setTpInput(e.target.value)}
+                  placeholder={priceData ? (
+                    selectedSide === 'long'
+                      ? `> ${Math.round(priceData.price).toLocaleString()}`
+                      : `< ${Math.round(priceData.price).toLocaleString()}`
+                  ) : '0.00'}
+                  className="flex-1 bg-transparent text-white text-sm outline-none placeholder:text-gray-600"
+                />
+              </div>
+              {tpInput && !tpValid && (
+                <p className="text-xs text-red-400">
+                  TP must be {selectedSide === 'long' ? 'above' : 'below'} entry price
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-purple-400">Stop Loss (USD)</label>
+              <div className={cn(
+                'flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2 border transition-colors',
+                slInput && !slValid ? 'border-red-500' : 'border-gray-700 focus-within:border-purple-500'
+              )}>
+                <span className="text-gray-400 text-sm">$</span>
+                <input
+                  type="number"
+                  value={slInput}
+                  onChange={(e) => setSlInput(e.target.value)}
+                  placeholder={priceData ? (
+                    selectedSide === 'long'
+                      ? `< ${Math.round(priceData.price).toLocaleString()}`
+                      : `> ${Math.round(priceData.price).toLocaleString()}`
+                  ) : '0.00'}
+                  className="flex-1 bg-transparent text-white text-sm outline-none placeholder:text-gray-600"
+                />
+              </div>
+              {slInput && !slValid && (
+                <p className="text-xs text-red-400">
+                  SL must be {selectedSide === 'long' ? 'below' : 'above'} entry price
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Order summary */}
       <div className="flex flex-col gap-2 bg-gray-800 rounded-lg p-3 text-xs">
         <Row label="Position Size" value={collateral > 0 ? formatPrice(positionSize) : '—'} />
@@ -145,6 +234,12 @@ export function OrderPanel() {
           label="Entry Price"
           value={priceData ? formatPrice(priceData.price) : '—'}
         />
+        {tpPrice && tpValid && (
+          <Row label="Take Profit" value={<span className="text-blue-400">{formatPrice(tpPrice)}</span>} />
+        )}
+        {slPrice && slValid && (
+          <Row label="Stop Loss" value={<span className="text-purple-400">{formatPrice(slPrice)}</span>} />
+        )}
       </div>
 
       {/* Open button */}
