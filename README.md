@@ -2,7 +2,7 @@
 
 An interactive perpetuals trading simulator built for learning DeFi futures concepts hands-on — without risking real money.
 
-**Live Demo → [perp-simulator.vercel.app](https://perp-simulator.vercel.app)** *(deploying)*
+**Live Demo → [perp-simulator.vercel.app](https://perp-simulator.vercel.app)**
 
 ---
 
