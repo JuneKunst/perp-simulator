@@ -1,47 +1,55 @@
 @import "tailwindcss";
 
+/* ─── Dark theme (Bloomberg terminal) ─── */
 :root {
-  --accent: #E8FF47;
-  --accent-dim: rgba(232, 255, 71, 0.08);
-  --long: #26A17B;
-  --long-dim: rgba(38, 161, 123, 0.13);
-  --short: #E05252;
-  --short-dim: rgba(224, 82, 82, 0.13);
-  --surface-0: #0B0C0E;
-  --surface-1: #111316;
-  --surface-2: #181B1F;
-  --surface-border: #252830;
+  --bg:           #0B0C0E;
+  --surface:      #111316;
+  --surface-2:    #181B1F;
+  --border:       #252830;
+  --border-2:     #3A3F4A;
+  --text-primary: #F0F0F0;
+  --text-secondary: #6B7280;
+  --text-muted:   #3A3F4A;
+  --accent:       #E8FF47;
+  --accent-fg:    #0B0C0E;
+  --accent-dim:   rgba(232, 255, 71, 0.08);
+  --long:         #26A17B;
+  --long-dim:     rgba(38, 161, 123, 0.13);
+  --short:        #E05252;
+  --short-dim:    rgba(224, 82, 82, 0.13);
+  --shadow:       0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.5);
 }
 
-@theme inline {
-  --color-background: var(--surface-0);
-  --color-foreground: #F0F0F0;
-  --font-sans: var(--font-syne);
-  --font-mono: var(--font-ibm-mono);
+/* ─── Light theme (Toss-inspired) ─── */
+:root.light {
+  --bg:           #F2F4F6;
+  --surface:      #FFFFFF;
+  --surface-2:    #F7F8FA;
+  --border:       #E5E8EB;
+  --border-2:     #D1D6DB;
+  --text-primary: #191F28;
+  --text-secondary: #8B95A1;
+  --text-muted:   #C4CAD2;
+  --accent:       #3182F6;
+  --accent-fg:    #FFFFFF;
+  --accent-dim:   rgba(49, 130, 246, 0.08);
+  --long:         #0DA878;
+  --long-dim:     rgba(13, 168, 120, 0.10);
+  --short:        #F04452;
+  --short-dim:    rgba(240, 68, 82, 0.10);
+  --shadow:       0 1px 6px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-md:    0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
 }
 
 body {
-  background: var(--surface-0);
-  color: #F0F0F0;
+  background: var(--bg);
+  color: var(--text-primary);
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* Tabular nums on all price/number displays */
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: var(--surface-1);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--surface-border);
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #3a3f4a;
-}
+/* ─── Custom scrollbar ─── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-2); }

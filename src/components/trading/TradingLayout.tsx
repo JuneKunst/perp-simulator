@@ -11,19 +11,21 @@ export function TradingLayout() {
   usePriceFeed('BTCUSDT')
 
   return (
-    <div className="flex flex-col h-screen bg-[#0B0C0E] overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
       <Header />
       <PriceBar />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Chart — takes most of the space */}
         <div className="flex-1 flex flex-col min-w-0">
           <TradingChart symbol="BTCUSDT" />
           <PositionPanel />
         </div>
 
-        {/* Order panel — 2px accent border separates from chart */}
-        <div className="w-80 border-l-2 border-[rgba(232,255,71,0.08)] flex-shrink-0">
+        {/* Order panel — subtle accent left border */}
+        <div
+          className="w-80 flex-shrink-0 border-l-2"
+          style={{ borderColor: 'var(--accent-dim)' }}
+        >
           <OrderPanel />
         </div>
       </div>

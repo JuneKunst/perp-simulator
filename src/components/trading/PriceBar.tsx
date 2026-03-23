@@ -10,8 +10,13 @@ export function PriceBar() {
 
   if (!priceData) {
     return (
-      <div className="flex items-center gap-6 px-4 py-2.5 border-b border-[#252830] bg-[#111316] text-sm">
-        <span className="text-gray-600 animate-pulse font-mono text-xs">Connecting to price feed...</span>
+      <div
+        className="flex items-center gap-6 px-4 py-2.5 border-b text-sm"
+        style={{ borderColor: 'var(--border)', background: 'var(--surface)' }}
+      >
+        <span className="animate-pulse font-mono text-xs" style={{ color: 'var(--text-muted)' }}>
+          Connecting...
+        </span>
       </div>
     )
   }
@@ -19,17 +24,26 @@ export function PriceBar() {
   const isPositive = priceData.change24h >= 0
 
   return (
-    <div className="flex items-center gap-0 px-4 py-2.5 border-b border-[#252830] bg-[#111316] text-sm overflow-x-auto">
-      {/* Primary: price + 24h change */}
-      <div className="flex items-center gap-3 flex-shrink-0 pr-4 mr-4 border-r border-[#252830]">
-        <span className="text-xs text-gray-500 font-sans tracking-wide">BTC/USDT</span>
+    <div
+      className="flex items-center gap-0 px-4 py-2.5 border-b text-sm overflow-x-auto"
+      style={{ borderColor: 'var(--border)', background: 'var(--surface)' }}
+    >
+      {/* Primary: symbol + price + change */}
+      <div
+        className="flex items-center gap-3 flex-shrink-0 pr-4 mr-4 border-r"
+        style={{ borderColor: 'var(--border)' }}
+      >
+        <span className="text-xs font-sans tracking-wide" style={{ color: 'var(--text-secondary)' }}>
+          BTC/USDT
+        </span>
         <LivePrice price={priceData.price} />
-        <span className={cn(
-          'text-xs font-mono tabular-nums px-1.5 py-0.5 rounded',
-          isPositive
-            ? 'text-[#26A17B] bg-[rgba(38,161,123,0.1)]'
-            : 'text-[#E05252] bg-[rgba(224,82,82,0.1)]'
-        )}>
+        <span
+          className="text-xs font-mono tabular-nums px-1.5 py-0.5 rounded"
+          style={{
+            color: isPositive ? 'var(--long)' : 'var(--short)',
+            background: isPositive ? 'var(--long-dim)' : 'var(--short-dim)',
+          }}
+        >
           {isPositive ? '+' : ''}{formatPct(priceData.change24h)}
         </span>
       </div>
@@ -42,7 +56,7 @@ export function PriceBar() {
           label="Funding Rate"
           value={`${(priceData.fundingRate * 100).toFixed(4)}%`}
           tooltipKey="funding-rate"
-          valueColor={priceData.fundingRate >= 0 ? 'text-[#26A17B]' : 'text-[#E05252]'}
+          valueStyle={{ color: priceData.fundingRate >= 0 ? 'var(--long)' : 'var(--short)' }}
         />
         <Stat
           label="Volume 24h"
@@ -68,12 +82,14 @@ function LivePrice({ price }: { price: number }) {
 
   return (
     <span
-      className={cn(
-        'font-mono text-base font-semibold tabular-nums transition-colors duration-300',
-        flash === 'up' && 'text-[#26A17B]',
-        flash === 'down' && 'text-[#E05252]',
-        flash === null && 'text-white'
-      )}
+      className="font-mono text-base font-semibold tabular-nums transition-colors duration-300"
+      style={{
+        color: flash === 'up'
+          ? 'var(--long)'
+          : flash === 'down'
+          ? 'var(--short)'
+          : 'var(--text-primary)',
+      }}
     >
       {formatPrice(price)}
     </span>
@@ -84,20 +100,26 @@ function Stat({
   label,
   value,
   tooltipKey,
-  valueColor = 'text-gray-200',
+  valueStyle,
 }: {
   label: string
   value: string
   tooltipKey?: string
-  valueColor?: string
+  valueStyle?: React.CSSProperties
 }) {
   return (
     <div className="flex flex-col flex-shrink-0 gap-0.5">
-      <span className="text-gray-600 text-[10px] font-sans tracking-wide uppercase flex items-center gap-1">
+      <span
+        className="text-[10px] font-sans tracking-wide uppercase flex items-center gap-1"
+        style={{ color: 'var(--text-secondary)' }}
+      >
         {label}
         {tooltipKey && <InfoTooltip termKey={tooltipKey} />}
       </span>
-      <span className={cn('text-sm font-mono tabular-nums font-medium', valueColor)}>
+      <span
+        className="text-sm font-mono tabular-nums font-medium"
+        style={{ color: 'var(--text-primary)', ...valueStyle }}
+      >
         {value}
       </span>
     </div>

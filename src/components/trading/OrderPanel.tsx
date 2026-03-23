@@ -10,15 +10,15 @@ import { InfoTooltip } from '@/components/education/InfoTooltip'
 const LEVERAGE_PRESETS = [1, 2, 5, 10, 20, 50]
 
 function getLeverageRisk(leverage: number) {
-  if (leverage <= 5)  return { label: 'Low risk',  color: 'text-[#26A17B]' }
-  if (leverage <= 15) return { label: 'Medium',    color: 'text-yellow-400' }
-  if (leverage <= 30) return { label: 'High risk', color: 'text-orange-400' }
-  return               { label: 'Extreme',         color: 'text-[#E05252]' }
+  if (leverage <= 5)  return { label: 'Low risk',  color: 'var(--long)' }
+  if (leverage <= 15) return { label: 'Medium',    color: '#F5A623' }
+  if (leverage <= 30) return { label: 'High risk', color: '#F07523' }
+  return               { label: 'Extreme',         color: 'var(--short)' }
 }
 
 export function OrderPanel() {
-  const priceData    = useTradingStore((s) => s.priceData)
-  const selectedSide = useTradingStore((s) => s.selectedSide)
+  const priceData         = useTradingStore((s) => s.priceData)
+  const selectedSide      = useTradingStore((s) => s.selectedSide)
   const setSelectedSide   = useTradingStore((s) => s.setSelectedSide)
   const selectedLeverage  = useTradingStore((s) => s.selectedLeverage)
   const setSelectedLeverage = useTradingStore((s) => s.setSelectedLeverage)
@@ -66,34 +66,48 @@ export function OrderPanel() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#111316] p-4 gap-4 overflow-y-auto">
+    <div
+      className="flex flex-col h-full p-4 gap-4 overflow-y-auto"
+      style={{ background: 'var(--surface)' }}
+    >
       {/* Balance */}
       <div className="flex justify-between items-center">
-        <span className="text-[10px] text-gray-600 uppercase tracking-wide font-sans">Paper Balance</span>
-        <span className="text-white font-mono tabular-nums text-sm font-semibold">{formatPrice(balance)}</span>
+        <span
+          className="text-[10px] uppercase tracking-wide font-sans"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          Paper Balance
+        </span>
+        <span
+          className="font-mono tabular-nums text-sm font-semibold"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          {formatPrice(balance)}
+        </span>
       </div>
 
       {/* Long / Short toggle */}
-      <div className="flex rounded-lg overflow-hidden border border-[#252830]">
+      <div
+        className="flex rounded-xl overflow-hidden border"
+        style={{ borderColor: 'var(--border)' }}
+      >
         <button
           onClick={() => setSelectedSide('long')}
-          className={cn(
-            'flex-1 py-2.5 text-sm font-semibold transition-all duration-150',
-            selectedSide === 'long'
-              ? 'bg-[#26A17B] text-white'
-              : 'text-gray-500 hover:text-gray-300 bg-[#181B1F]'
-          )}
+          className="flex-1 py-2.5 text-sm font-semibold transition-all duration-150"
+          style={{
+            background: selectedSide === 'long' ? 'var(--long)' : 'var(--surface-2)',
+            color: selectedSide === 'long' ? '#fff' : 'var(--text-secondary)',
+          }}
         >
           Long
         </button>
         <button
           onClick={() => setSelectedSide('short')}
-          className={cn(
-            'flex-1 py-2.5 text-sm font-semibold transition-all duration-150',
-            selectedSide === 'short'
-              ? 'bg-[#E05252] text-white'
-              : 'text-gray-500 hover:text-gray-300 bg-[#181B1F]'
-          )}
+          className="flex-1 py-2.5 text-sm font-semibold transition-all duration-150"
+          style={{
+            background: selectedSide === 'short' ? 'var(--short)' : 'var(--surface-2)',
+            color: selectedSide === 'short' ? '#fff' : 'var(--text-secondary)',
+          }}
         >
           Short
         </button>
@@ -101,18 +115,29 @@ export function OrderPanel() {
 
       {/* Collateral input */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-[10px] text-gray-600 uppercase tracking-wide font-sans flex items-center gap-1">
-          Collateral (USD)
-          <InfoTooltip termKey="collateral" />
+        <label
+          className="text-[10px] uppercase tracking-wide font-sans flex items-center gap-1"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          Collateral (USD) <InfoTooltip termKey="collateral" />
         </label>
-        <div className="flex items-center gap-2 bg-[#181B1F] rounded-lg px-3 py-2.5 border border-[#252830] focus-within:border-[rgba(232,255,71,0.5)] transition-colors">
-          <span className="text-gray-600 text-sm font-mono">$</span>
+        <div
+          className="flex items-center gap-2 rounded-xl px-3 py-2.5 border transition-colors"
+          style={{
+            background: 'var(--surface-2)',
+            borderColor: 'var(--border)',
+          }}
+        >
+          <span className="text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>$</span>
           <input
             type="number"
             value={collateralInput}
             onChange={(e) => setCollateralInput(e.target.value)}
             placeholder="0.00"
-            className="flex-1 bg-transparent text-white text-sm font-mono tabular-nums outline-none placeholder:text-gray-700"
+            className="flex-1 bg-transparent text-sm font-mono tabular-nums outline-none"
+            style={{
+              color: 'var(--text-primary)',
+            }}
           />
         </div>
       </div>
@@ -120,15 +145,17 @@ export function OrderPanel() {
       {/* Leverage */}
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
-          <label className="text-[10px] text-gray-600 uppercase tracking-wide font-sans flex items-center gap-1">
-            Leverage
-            <InfoTooltip termKey="leverage" />
+          <label
+            className="text-[10px] uppercase tracking-wide font-sans flex items-center gap-1"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Leverage <InfoTooltip termKey="leverage" />
           </label>
           <div className="flex items-center gap-2">
-            <span className={cn('text-[10px] font-mono transition-colors duration-200', risk.color)}>
+            <span className="text-[10px] font-mono transition-colors duration-200" style={{ color: risk.color }}>
               {risk.label}
             </span>
-            <span className={cn('font-mono text-sm font-semibold transition-colors duration-200 tabular-nums', risk.color)}>
+            <span className="font-mono text-sm font-semibold tabular-nums transition-colors duration-200" style={{ color: risk.color }}>
               {selectedLeverage}x
             </span>
           </div>
@@ -139,19 +166,20 @@ export function OrderPanel() {
           max={50}
           value={selectedLeverage}
           onChange={(e) => setSelectedLeverage(Number(e.target.value))}
-          className="w-full accent-[#E8FF47]"
+          className="w-full accent-[var(--accent)]"
         />
         <div className="flex gap-1.5">
           {LEVERAGE_PRESETS.map((lev) => (
             <button
               key={lev}
               onClick={() => setSelectedLeverage(lev)}
-              className={cn(
-                'flex-1 py-1 text-xs font-mono rounded transition-all duration-150',
-                selectedLeverage === lev
-                  ? 'bg-[#E8FF47] text-[#0B0C0E] font-semibold'
-                  : 'bg-[#181B1F] text-gray-500 hover:text-gray-300 border border-[#252830]'
-              )}
+              className="flex-1 py-1 text-xs font-mono rounded-lg transition-all duration-150 border"
+              style={{
+                background:  selectedLeverage === lev ? 'var(--accent)' : 'var(--surface-2)',
+                color:       selectedLeverage === lev ? 'var(--accent-fg)' : 'var(--text-secondary)',
+                borderColor: selectedLeverage === lev ? 'var(--accent)' : 'var(--border)',
+                fontWeight:  selectedLeverage === lev ? 600 : 400,
+              }}
             >
               {lev}x
             </button>
@@ -163,26 +191,30 @@ export function OrderPanel() {
       <div className="flex flex-col gap-2">
         <button
           onClick={() => setShowTPSL((v) => !v)}
-          className="flex items-center justify-between text-[10px] text-gray-600 hover:text-gray-400 transition-colors uppercase tracking-wide font-sans"
+          className="flex items-center justify-between text-[10px] uppercase tracking-wide font-sans transition-colors"
+          style={{ color: 'var(--text-secondary)' }}
         >
           <span className="flex items-center gap-1">
-            Take Profit / Stop Loss
-            <InfoTooltip termKey="tpsl" />
+            Take Profit / Stop Loss <InfoTooltip termKey="tpsl" />
           </span>
-          <span>{showTPSL ? '▲' : '▼'}</span>
+          <span style={{ color: 'var(--text-muted)' }}>{showTPSL ? '▲' : '▼'}</span>
         </button>
 
         {showTPSL && (
           <div className="flex flex-col gap-2">
+            {/* TP */}
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-[#26A17B] uppercase tracking-wide font-sans">Take Profit</label>
-              <div className={cn(
-                'flex items-center gap-2 bg-[#181B1F] rounded-lg px-3 py-2.5 border transition-colors',
-                tpInput && !tpValid
-                  ? 'border-[#E05252]'
-                  : 'border-[#252830] focus-within:border-[rgba(38,161,123,0.5)]'
-              )}>
-                <span className="text-gray-600 text-sm font-mono">$</span>
+              <label className="text-[10px] uppercase tracking-wide font-sans" style={{ color: 'var(--long)' }}>
+                Take Profit
+              </label>
+              <div
+                className="flex items-center gap-2 rounded-xl px-3 py-2.5 border transition-colors"
+                style={{
+                  background: 'var(--surface-2)',
+                  borderColor: tpInput && !tpValid ? 'var(--short)' : 'var(--border)',
+                }}
+              >
+                <span className="text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>$</span>
                 <input
                   type="number"
                   value={tpInput}
@@ -192,25 +224,30 @@ export function OrderPanel() {
                       ? `> ${Math.round(priceData.price).toLocaleString()}`
                       : `< ${Math.round(priceData.price).toLocaleString()}`
                     : '0.00'}
-                  className="flex-1 bg-transparent text-white text-sm font-mono tabular-nums outline-none placeholder:text-gray-700"
+                  className="flex-1 bg-transparent text-sm font-mono tabular-nums outline-none"
+                  style={{ color: 'var(--text-primary)' }}
                 />
               </div>
               {tpInput && !tpValid && (
-                <p className="text-[10px] text-[#E05252] font-sans">
+                <p className="text-[10px] font-sans" style={{ color: 'var(--short)' }}>
                   TP must be {selectedSide === 'long' ? 'above' : 'below'} entry
                 </p>
               )}
             </div>
 
+            {/* SL */}
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-[#E05252] uppercase tracking-wide font-sans">Stop Loss</label>
-              <div className={cn(
-                'flex items-center gap-2 bg-[#181B1F] rounded-lg px-3 py-2.5 border transition-colors',
-                slInput && !slValid
-                  ? 'border-[#E05252]'
-                  : 'border-[#252830] focus-within:border-[rgba(224,82,82,0.5)]'
-              )}>
-                <span className="text-gray-600 text-sm font-mono">$</span>
+              <label className="text-[10px] uppercase tracking-wide font-sans" style={{ color: 'var(--short)' }}>
+                Stop Loss
+              </label>
+              <div
+                className="flex items-center gap-2 rounded-xl px-3 py-2.5 border transition-colors"
+                style={{
+                  background: 'var(--surface-2)',
+                  borderColor: slInput && !slValid ? 'var(--short)' : 'var(--border)',
+                }}
+              >
+                <span className="text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>$</span>
                 <input
                   type="number"
                   value={slInput}
@@ -220,11 +257,12 @@ export function OrderPanel() {
                       ? `< ${Math.round(priceData.price).toLocaleString()}`
                       : `> ${Math.round(priceData.price).toLocaleString()}`
                     : '0.00'}
-                  className="flex-1 bg-transparent text-white text-sm font-mono tabular-nums outline-none placeholder:text-gray-700"
+                  className="flex-1 bg-transparent text-sm font-mono tabular-nums outline-none"
+                  style={{ color: 'var(--text-primary)' }}
                 />
               </div>
               {slInput && !slValid && (
-                <p className="text-[10px] text-[#E05252] font-sans">
+                <p className="text-[10px] font-sans" style={{ color: 'var(--short)' }}>
                   SL must be {selectedSide === 'long' ? 'below' : 'above'} entry
                 </p>
               )}
@@ -234,21 +272,24 @@ export function OrderPanel() {
       </div>
 
       {/* Order summary */}
-      <div className="flex flex-col gap-2 bg-[#181B1F] rounded-lg p-3 border border-[#252830]">
+      <div
+        className="flex flex-col gap-2 rounded-xl p-3 border"
+        style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}
+      >
         <Row label="Position Size" value={collateral > 0 ? formatPrice(positionSize) : '—'} />
         <Row
           label={<span className="flex items-center gap-1">Liq. Price <InfoTooltip termKey="liquidation" /></span>}
           value={liquidationPrice
-            ? <span className="text-[#E05252] font-mono tabular-nums">{formatPrice(liquidationPrice)}</span>
+            ? <span className="font-mono tabular-nums" style={{ color: 'var(--short)' }}>{formatPrice(liquidationPrice)}</span>
             : '—'}
         />
         <Row label="Entry Fee" value={collateral > 0 ? formatPrice(fee) : '—'} />
         <Row label="Entry Price" value={priceData ? formatPrice(priceData.price) : '—'} />
         {tpPrice && tpValid && (
-          <Row label="Take Profit" value={<span className="text-[#26A17B] font-mono tabular-nums">{formatPrice(tpPrice)}</span>} />
+          <Row label="Take Profit" value={<span className="font-mono tabular-nums" style={{ color: 'var(--long)' }}>{formatPrice(tpPrice)}</span>} />
         )}
         {slPrice && slValid && (
-          <Row label="Stop Loss" value={<span className="text-[#E05252] font-mono tabular-nums">{formatPrice(slPrice)}</span>} />
+          <Row label="Stop Loss" value={<span className="font-mono tabular-nums" style={{ color: 'var(--short)' }}>{formatPrice(slPrice)}</span>} />
         )}
       </div>
 
@@ -256,13 +297,11 @@ export function OrderPanel() {
       <button
         onClick={handleOpen}
         disabled={!collateral || collateral <= 0 || !priceData}
-        className={cn(
-          'w-full py-3 rounded-lg font-semibold text-sm transition-all duration-150 font-sans tracking-wide',
-          selectedSide === 'long'
-            ? 'bg-[#26A17B] hover:bg-[#2dba8e] disabled:bg-[#1a3d30] disabled:text-[#2d5c47]'
-            : 'bg-[#E05252] hover:bg-[#e86060] disabled:bg-[#3d1a1a] disabled:text-[#5c2d2d]',
-          'disabled:cursor-not-allowed text-white'
-        )}
+        className="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-150 font-sans tracking-wide disabled:cursor-not-allowed disabled:opacity-40"
+        style={{
+          background: selectedSide === 'long' ? 'var(--long)' : 'var(--short)',
+          color: '#fff',
+        }}
       >
         {selectedSide === 'long' ? 'Open Long' : 'Open Short'}
       </button>
@@ -273,8 +312,12 @@ export function OrderPanel() {
 function Row({ label, value }: { label: React.ReactNode; value: React.ReactNode }) {
   return (
     <div className="flex justify-between items-center">
-      <span className="text-gray-600 text-[10px] uppercase tracking-wide font-sans">{label}</span>
-      <span className="text-gray-200 font-mono tabular-nums text-xs font-medium">{value}</span>
+      <span className="text-[10px] uppercase tracking-wide font-sans" style={{ color: 'var(--text-secondary)' }}>
+        {label}
+      </span>
+      <span className="font-mono tabular-nums text-xs font-medium" style={{ color: 'var(--text-primary)' }}>
+        {value}
+      </span>
     </div>
   )
 }
